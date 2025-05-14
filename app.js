@@ -63,8 +63,8 @@ app.post('/movies/', async (request, response) => {
 })
 
 //Get Movie API
-app.get('/movies/:moviesId/', async (request, response) => {
-  const {moviesId} = request.params
+app.get('/movies/:movieId/', async (request, response) => {
+  const {movieId} = request.params
   const getMovieQuery = `
     SELECT
         movie_id,
@@ -74,15 +74,19 @@ app.get('/movies/:moviesId/', async (request, response) => {
     FROM
         movie
     WHERE
-        movie_id = ${moviesId};`
+        movie_id = ${movieId};`
   const movie = await db.get(getMovieQuery)
-  const formatedOneMovie = {
-    movieId: movie.movie_id,
-    directorId: movie.director_id,
-    movieName: movie.movie_name,
-    leadActor: movie.lead_actor,
+  if (movie === undefined) {
+    response.status(404).send('Movie Not Found')
+  } else {
+    const formattedOneMovie = {
+      movieId: movie.movie_id,
+      directorId: movie.director_id,
+      movieName: movie.movie_name,
+      leadActor: movie.lead_actor,
+    }
+    response.send(formattedOneMovie)
   }
-  response.send(formatedOneMovie)
 })
 
 //update book APi
